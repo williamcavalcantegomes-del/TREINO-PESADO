@@ -1,0 +1,1706 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Treino Modo Caverna</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0a;
+    --surface: #111111;
+    --surface2: #1a1a1a;
+    --border: #2a2a2a;
+    --accent: #e8ff00;
+    --accent2: #ff4d00;
+    --text: #f0f0f0;
+    --muted: #666;
+    --muscle: #e8ff00;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* HEADER */
+  .header {
+    position: relative;
+    padding: 60px 24px 40px;
+    text-align: center;
+    border-bottom: 1px solid var(--border);
+    overflow: hidden;
+  }
+
+  .header::before {
+    content: '';
+    position: absolute;
+    top: -60px; left: 50%; transform: translateX(-50%);
+    width: 400px; height: 400px;
+    background: radial-gradient(circle, rgba(232,255,0,0.08) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .header-badge {
+    display: inline-block;
+    background: var(--accent);
+    color: #000;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 11px;
+    letter-spacing: 3px;
+    padding: 4px 14px;
+    margin-bottom: 16px;
+  }
+
+  .header h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(52px, 12vw, 96px);
+    letter-spacing: 4px;
+    line-height: 0.9;
+    color: var(--text);
+  }
+
+  .header h1 span { color: var(--accent); }
+
+  .header p {
+    margin-top: 16px;
+    color: var(--muted);
+    font-size: 14px;
+    letter-spacing: 1px;
+  }
+
+  /* NAV DAYS */
+  .days-nav {
+    display: flex;
+    overflow-x: auto;
+    gap: 4px;
+    padding: 20px 24px;
+    border-bottom: 1px solid var(--border);
+    scrollbar-width: none;
+  }
+  .days-nav::-webkit-scrollbar { display: none; }
+
+  .day-btn {
+    flex-shrink: 0;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--muted);
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 13px;
+    letter-spacing: 2px;
+    padding: 10px 18px;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+
+  .day-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .day-btn.active {
+    background: var(--accent);
+    color: #000;
+    border-color: var(--accent);
+  }
+
+  /* CONTENT */
+  .content {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 32px 24px 80px;
+  }
+
+  .day-section { display: none; }
+  .day-section.active { display: block; }
+
+  .day-header {
+    margin-bottom: 32px;
+  }
+
+  .day-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 48px;
+    letter-spacing: 3px;
+    line-height: 1;
+  }
+
+  .day-focus {
+    display: inline-block;
+    margin-top: 8px;
+    font-size: 12px;
+    letter-spacing: 2px;
+    color: var(--accent);
+    text-transform: uppercase;
+    border-left: 3px solid var(--accent);
+    padding-left: 10px;
+  }
+
+  /* EXERCISE CARD */
+  .exercise-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    margin-bottom: 16px;
+    overflow: hidden;
+    transition: border-color 0.2s;
+    animation: fadeUp 0.4s ease both;
+  }
+
+  .exercise-card:nth-child(1) { animation-delay: 0.05s }
+  .exercise-card:nth-child(2) { animation-delay: 0.1s }
+  .exercise-card:nth-child(3) { animation-delay: 0.15s }
+  .exercise-card:nth-child(4) { animation-delay: 0.2s }
+  .exercise-card:nth-child(5) { animation-delay: 0.25s }
+  .exercise-card:nth-child(6) { animation-delay: 0.3s }
+  .exercise-card:nth-child(7) { animation-delay: 0.35s }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .exercise-card:hover { border-color: #444; }
+
+  .card-top {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 20px;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .ex-number {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 32px;
+    color: var(--border);
+    line-height: 1;
+    min-width: 40px;
+  }
+
+  .ex-main { flex: 1; }
+
+  .ex-name {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+
+  .ex-meta {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  .meta-pill {
+    font-size: 11px;
+    letter-spacing: 1px;
+    color: var(--muted);
+    text-transform: uppercase;
+  }
+
+  .meta-pill span {
+    color: var(--accent);
+    font-weight: 600;
+  }
+
+  .expand-icon {
+    color: var(--muted);
+    font-size: 18px;
+    transition: transform 0.3s;
+  }
+
+  .exercise-card.open .expand-icon { transform: rotate(180deg); }
+
+  /* CARD BODY */
+  .card-body {
+    display: none;
+    padding: 0 20px 20px;
+    border-top: 1px solid var(--border);
+  }
+
+  .exercise-card.open .card-body { display: block; }
+
+  .section-label {
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin: 16px 0 8px;
+  }
+
+  /* MUSCLES */
+  .muscles-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 4px;
+  }
+
+  .muscle-tag {
+    background: rgba(232,255,0,0.08);
+    border: 1px solid rgba(232,255,0,0.2);
+    color: var(--accent);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    padding: 4px 10px;
+    text-transform: uppercase;
+  }
+
+  .muscle-tag.secondary {
+    background: rgba(255,255,255,0.03);
+    border-color: var(--border);
+    color: var(--muted);
+  }
+
+  /* VISUAL GAIN */
+  .visual-gain {
+    background: var(--surface2);
+    border-left: 3px solid var(--accent2);
+    padding: 12px 16px;
+    margin: 4px 0;
+  }
+
+  .visual-gain p {
+    font-size: 13px;
+    line-height: 1.6;
+    color: #ccc;
+  }
+
+  .visual-gain strong { color: var(--text); }
+
+  /* BENEFITS */
+  .benefits-list {
+    list-style: none;
+  }
+
+  .benefits-list li {
+    font-size: 13px;
+    color: #aaa;
+    padding: 5px 0;
+    padding-left: 16px;
+    position: relative;
+    line-height: 1.5;
+  }
+
+  .benefits-list li::before {
+    content: '→';
+    position: absolute;
+    left: 0;
+    color: var(--accent);
+    font-size: 12px;
+  }
+
+  /* CARDIO CARD */
+  .cardio-card {
+    background: linear-gradient(135deg, rgba(255,77,0,0.1), rgba(255,77,0,0.03));
+    border: 1px solid rgba(255,77,0,0.3);
+    padding: 20px;
+    margin-top: 24px;
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+  }
+
+  .cardio-icon {
+    font-size: 28px;
+  }
+
+  .cardio-info h4 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 20px;
+    letter-spacing: 2px;
+    color: var(--accent2);
+    margin-bottom: 4px;
+  }
+
+  .cardio-info p {
+    font-size: 13px;
+    color: #aaa;
+    line-height: 1.5;
+  }
+
+  /* REST DAY */
+  .rest-card {
+    text-align: center;
+    padding: 80px 24px;
+    border: 1px dashed var(--border);
+  }
+
+  .rest-card h2 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 48px;
+    letter-spacing: 4px;
+    color: var(--muted);
+    margin-bottom: 12px;
+  }
+
+  .rest-card p { color: var(--muted); font-size: 14px; line-height: 1.6; }
+
+  /* LEGEND */
+  .legend {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    margin-bottom: 24px;
+    padding: 14px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: var(--muted);
+  }
+
+  .legend-dot {
+    width: 10px; height: 10px;
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-badge">MODO CAVERNA — 60 DIAS</div>
+  <h1>TREINO<br><span>TOTAL</span></h1>
+  <p>6 dias · Push / Pull / Legs × 2 · Cardio integrado</p>
+</div>
+
+<div class="days-nav">
+  <button class="day-btn active" onclick="showDay(0)">SEG · PUSH A</button>
+  <button class="day-btn" onclick="showDay(1)">TER · PULL A</button>
+  <button class="day-btn" onclick="showDay(2)">QUA · LEGS A</button>
+  <button class="day-btn" onclick="showDay(3)">QUI · PUSH B</button>
+  <button class="day-btn" onclick="showDay(4)">SEX · PULL B</button>
+  <button class="day-btn" onclick="showDay(5)">SÁB · LEGS B</button>
+  <button class="day-btn" onclick="showDay(6)">DOM · DESCANSO</button>
+</div>
+
+<div class="content">
+
+  <!-- SEGUNDA - PUSH A -->
+  <div class="day-section active" id="day-0">
+    <div class="day-header">
+      <div class="day-title">SEGUNDA</div>
+      <div class="day-focus">Push A — Peito · Ombro · Tríceps</div>
+    </div>
+    <div class="legend">
+      <div class="legend-item"><div class="legend-dot" style="background:var(--accent)"></div> Músculo principal</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--border)"></div> Músculo secundário</div>
+    </div>
+
+    <div class="exercise-card" onclick="toggleCard(this)">
+      <div class="card-top">
+        <div class="ex-number">01</div>
+        <div class="ex-main">
+          <div class="ex-name"><a href="https://www.youtube.com/results?search_query=Supino+Inclinado+com+Halteres+como+fazer" target="_blank" style="color:inherit;text-decoration:none;border-bottom:1px dashed var(--accent);">Supino Inclinado com Halteres</a></div>
+          <div class="ex-meta">
+            <span class="meta-pill"><span>4</span> séries</span>
+            <span class="meta-pill"><span>10–12</span> reps</span>
+            <span class="meta-pill">descanso <span>75s</span></span>
+          </div>
+        </div>
+        <div class="expand-icon">▾</div>
+      </div>
+      <div class="card-body">
+        <div class="section-label">Músculos Trabalhados</div>
+        <div class="muscles-grid">
+          <span class="muscle-tag">Peitoral Superior</span>
+          <span class="muscle-tag secondary">Ombro Anterior</span>
+          <span class="muscle-tag secondary">Tríceps</span>
+        </div>
+        <div class="section-label">Ganho Visual</div>
+        <div class="visual-gain">
+          <p>Desenvolve o <strong>peitoral superior</strong>, criando aquela "prateleira" acima do peito que dá volume e definição na região clavicular. É o exercício que vai fazer a camiseta ficar cheia na parte de cima do peito — resultado visível mesmo sem tirar a roupa.</p>
+        </div>
+        <div class="section-label">Benefícios</div>
+        <ul class="benefits-list">
+          <li>Halteres ativam mais fibras musculares que a barra pelo maior arco de movimento</li>
+          <li>Corrige desequilíbrios entre lado direito e esquerdo</li>
+          <li>Menos pressão nos ombros que o supino reto</li>
+          <li>Estimula o peitoral superior, que tende a ser negligenciado</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="exercise-card" onclick="toggleCard(this)">
+      <div class="card-top">
+        <div class="ex-number">02</div>
+        <div class="ex-main">
+          <div class="ex-name"><a href="https://www.youtube.com/results?search_query=Supino+Reto+na+Máquina+como+fazer" target="_blank" style="color:inherit;text-decoration:none;border-bottom:1px dashed var(--accent);">Supino Reto na Máquina</a></div>
+          <div class="ex-meta">
+            <span class="meta-pill"><span>3</span> séries</span>
+            <span class="meta-pill"><span>12</span> reps</span>
+            <span class="meta-pill">descanso <span>60s</span></span>
+          </div>
+        </div>
+        <div class="expand-icon">▾</div>
+      </div>
+      <div class="card-body">
+        <div class="section-label">Músculos Trabalhados</div>
+        <div class="muscles-grid">
+          <span class="muscle-tag">Peitoral Médio</span>
+          <span class="muscle-tag secondary">Tríceps</span>
+          <span class="muscle-tag secondary">Deltoide Anterior</span>
+        </div>
+        <div class="section-label">Ganho Visual</div>
+        <div class="visual-gain">
+          <p>Trabalha o <strong>peitoral médio</strong> com segurança e isolamento. O resultado é um peito mais largo e cheio no centro, dando a impressão de "placa" de músculo — visível mesmo com camiseta justa.</p>
+        </div>
+        <div class="section-label">Benefícios</div>
+        <ul class="benefits-list">
+          <li>Movimento guiado reduz risco de lesão no ombro</li>
+          <li>Permite chegar mais próximo da falha com segurança</li>
+          <li>Ideal para volume muscular puro no peitoral médio</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="exercise-card" onclick="toggleCard(this)">
+      <div class="card-top">
+        <div class="ex-number">03</div>
+        <div class="ex-main">
+          <div class="ex-name"><a href="https://www.youtube.com/results?search_query=Crucifixo+no+Cabo+(baixo)+como+fazer" target="_blank" style="color:inherit;text-decoration:none;border-bottom:1px dashed var(--accent);">Crucifixo no Cabo (baixo)</a></div>
+          <div class="ex-meta">
+            <span class="meta-pill"><span>3</span> séries</span>
+            <span class="meta-pill"><span>15</span> reps</span>
+            <span class="meta-pill">descanso <span>45s</span></span>
+          </div>
+        </div>
+        <div class="expand-icon">▾</div>
+      </div>
+      <div class="card-body">
+        <div class="section-label">Músculos Trabalhados</div>
+        <div class="muscles-grid">
+          <span class="muscle-tag">Peitoral Superior</span>
+          <span class="muscle-tag">Esterno</span>
+          <span class="muscle-tag secondary">Deltoide</span>
+        </div>
+        <div class="section-label">Ganho Visual</div>
+        <div class="visual-gain">
+          <p>Define a <strong>linha central do peitoral</strong> e dá o famoso "sulco" entre os dois lados do peito. Trabalha especialmente a porção superior com tensão constante, algo que halteres não entregam.</p>
+        </div>
+        <div class="section-label">Benefícios</div>
+        <ul class="benefits-list">
+          <li>Tensão constante do cabo = maior ativação muscular durante todo o movimento</li>
+          <li>Excelente para finalizar e "estufar" o peitoral após os compostos</li>
+          <li>Menor carga nas articulações que o crucifixo com halteres</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="exercise-card" onclick="toggleCard(this)">
+      <div class="card-top">
+        <div class="ex-number">04</div>
+        <div class="ex-main">
+          <div class="ex-name"><a href="https://www.youtube.com/results?search_query=Desenvolvimento+com+Halteres+como+fazer" target="_blank" style="color:inherit;text-decoration:none;border-bottom:1px dashed var(--accent);">Desenvolvimento com Halteres</a></div>
+          <div class="ex-meta">
+            <span class="meta-pill"><span>4</span> séries</span>
+            <span class="meta-pill"><span>10–12</span> reps</span>
+            <span class="meta-pill">descanso <span>75s</span></span>
+          </div>
+        </div>
+        <div class="expand-icon">▾</div>
+      </div>
+      <div class="card-body">
+        <div class="section-label">Músculos Trabalhados</div>
+        <div class="muscles-grid">
+          <span class="muscle-tag">Deltoide Anterior</span>
+          <span class="muscle-tag">Deltoide Lateral</span>
+          <span class="muscle-tag secondary">Trapézio</span>
+          <span class="muscle-tag secondary">Tríceps</span>
+        </div>
+        <div class="section-label">Ganho Visual</div>
+        <div class="visual-gain">
+          <p>O exercício que mais muda a silhueta. Ombros grandes criam o efeito <strong>"V invertido"</strong> — fazem a cintura parecer mais fina e dão largura ao corpo. Visível com qualquer roupa. O deltoide anterior e lateral crescem juntos aqui.</p>
+        </div>
+        <div class="section-label">Benefícios</div>
+        <ul class="benefits-list">
+          <li>Maior arco de movimento que a barra = mais hipertrofia</li>
+          <li>Ativa os três feixes do deltóide simultaneamente</li>
+          <li>Melhora postura e abre o tórax visualmente</li>
+          <li>Fortalece estabilizadores do ombro</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="exercise-card" onclick="toggleCard(this)">
+      <div class="card-top">
+        <div class="ex-number">05</div>
+        <div class="ex-main">
+          <div class="ex-name"><a href="https://www.youtube.com/results?search_query=Elevação+Lateral+como+fazer" target="_blank" style="color:inherit;text-decoration:none;border-bottom:1px dashed var(--accent);">Elevação Lateral</a></div>
+          <div class="ex-meta">
+            <span class="meta-pill"><span>3</span> séries</span>
+            <span class="meta-pill"><span>15</span> reps</span>
+            <span class="meta-pill">descanso <span>45s</span></span>
+          </div>
+        </div>
+        <div class="expand-icon">▾</div>
+      </div>
+      <div class="card-body">
+        <div class="section-label">Músculos Trabalhados</div>
+        <div class="muscles-grid">
+          <span class="muscle-tag">Deltoide Lateral</span>
+          <span class="muscle-tag secondary">Trapézio</span>
+        </div>
+        <div class="section-label">Ganho Visual</div>
+        <div class="visual-gain">
+          <p>Isolamento puro do <strong>deltoide lateral</strong> — responsável pela largura dos ombros. É o músculo que faz parecer que você está usando "ombreiras" mesmo sem camisa. Muda completamente a proporção do corpo quando desenvolvido.</p>
+        </div>
+        <div class="section-label">Benefícios</div>
+        <ul class="benefits-list">
+          <li>Único exercício que isola efetivamente o deltóide lateral</li>
+          <li>Cria a "rodada" característica do ombro desenvolvido</li>
+          <li>Melhora proporção corpo inteiro — ombros largos = cintura visualmente menor</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="exercise-card" onclick="toggleCard(this)">
+      <div class="card-top">
+        <div class="ex-number">06</div>
+        <div class="ex-main">
+          <div class="ex-name"><a href="https://www.youtube.com/results?search_query=Tríceps+Corda+no+Cabo+como+fazer" target="_blank" style="color:inherit;text-decoration:none;border-bottom:1px dashed var(--accent);">Tríceps Corda no Cabo</a></div>
+          <div class="ex-meta">
+            <span class="meta-pill"><span>3</span> séries</span>
+            <span class="meta-pill"><span>15</span> reps</span>
+            <span class="meta-pill">descanso <span>45s</span></span>
+          </div>
+        </div>
+        <div class="expand-icon">▾</div>
+      </div>
+      <div class="card-body">
+        <div class="section-label">Músculos Trabalhados</div>
+        <div class="muscles-grid">
+          <span class="muscle-tag">Tríceps Lateral</span>
+          <span class="muscle-tag">Tríceps Medial</span>
+          <span class="muscle-tag secondary">Antebraço</span>
+        </div>
+        <div class="section-label">Ganho Visual</div>
+        <div class="visual-gain">
+          <p>O tríceps é <strong>2/3 do braço</strong>. Esse exercício vai direto na cabeça lateral — aquele músculo que aparece em destaque quando você dobra o braço. Braço cheio e "cortado" na parte de baixo.</p>
+        </div>
+        <div class="section-label">Benefícios</div>
+        <ul class="benefits-list">
+          <li>A abertura da corda na descida ativa mais fibras laterais</li>
+          <li>Tensão constante do cabo = bomba muscular garantida</li>
+          <li>Baixo risco de lesão, ideal para alto volume</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="exercise-card" onclick="toggleCard(this)">
+      <div class="card-top">
+        <div class="ex-number">07</div>
+        <div class="ex-main">
+          <div class="ex-name"><a href="https://www.youtube.com/results?search_query=Tríceps+Testa+como+fazer" target="_blank" style="color:inherit;text-decoration:none;border-bottom:1px dashed var(--accent);">Tríceps Testa</a></div>
+          <div class="ex-meta">
+            <span class="meta-pill"><span>3</span> séries</span>
+            <span class="meta-pill"><span>12</span> reps</span>
+            <span class="meta-pill">descanso <span>60s</span></span>
+          </div>
+        </div>
+        <div class="expand-icon">▾</div>
+      </div>
+      <div class="card-body">
+        <div class="section-label">Músculos Trabalhados</div>
+        <div class="muscles-grid">
+          <span class="muscle-tag">Tríceps Longo</span>
+          <span class="muscle-tag secondary">Tríceps Medial</span>
+        </div>
+        <div class="section-label">Ganho Visual</div>
+        <div class="visual-gain">
+          <p>Ataca a <strong>cabeça longa do tríceps</strong> — a parte que dá "espessura" ao braço visto de lado e de trás. Quando desenvolvida, aparece como um "banana" na parte interna do braço. Muda completamente o perfil do braço.</p>
+        </div>
+        <div class="section-label">Benefícios</div>
+        <ul class="benefits-list">
+          <li>Maior alongamento da cabeça longa = mais hipertrofia</li>
+          <li>Trabalha o tríceps em ângulo diferente da corda</li>
+          <li>Complemento essencial para braços completos e volumosos</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="cardio-card">
+      <div class="cardio-icon">🏃</div>
+      <div class="cardio-info">
+        <h4>CARDIO FINAL — 20 MIN</h4>
+        <p><strong>Esteira com inclinação 10–12%</strong> · Velocidade moderada (5–6 km/h) · Zona de gordura 60–70% FC máx · Não precisa correr — caminhar inclinado queima mais gordura e preserva massa muscular.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- TERÇA - PULL A -->
+  <div class="day-section" id="day-1">
+    <div class="day-header">
+      <div class="day-title">TERÇA</div>
+      <div class="day-focus">Pull A — Costas · Bíceps</div>
+    </div>
+
+    <div class="exercise-card" onclick="toggleCard(this)">
+      <div class="card-top">
+        <div class="ex-number">01</div>
+        <div class="ex-main">
+          <div class="ex-name"><a href="https://www.youtube.com/results?search_query=Puxada+Frontal+Aberta+como+fazer" target="_blank" style="color:inherit;text-decoration:none;border-bottom:1px dashed var(--accent);">Puxada Frontal Aberta</a></div>
+          <div class="ex-meta">
+            <span class="meta-pill"><span>4</span> séries</span>
+            <span class="meta-pill"><span>10–12</span> reps</span>
+            <span class="meta-pill">descanso <span>75s</span></span>
+          </div>
+        </div>
+        <div class="expand-icon">▾</div>
+      </div>
+      <div class="card-body">
+        <div class="section-label">Músculos Trabalhados</div>
+        <div class="muscles-grid">
+          <span class="muscle-tag">Latíssimo Dorsal</span>
+          <span class="muscle-tag secondary">Bíceps</span>
+          <span class="muscle-tag secondary">Romboides</span>
+        </div>
+        <div class="section-label">Ganho Visual</div>
+        <div class="visual-gain">
+          <p>O "lat" é o músculo que cria a silhueta em <strong>V nas costas</strong>. Quando desenvolvido, aparece como "asas" que alargam a parte superior das costas. Visível de frente, de lado e de costas — transforma completamente o shape.</p>
+        </div>
+        <div class="section-label">Benefícios</div>
+        <ul class="benefits-list">
+          <li>Maior ativador do latíssimo dorsal na academia</li>
+          <li>Pegada aberta maximiza o arco e o stretch do lat</li>
+          <li>Melhora postura — combate o "curvado" do dia a dia</li>
+          <li>Base do treino de costas para qualquer nível</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="exercise-card" onclick="toggleCard(this)">
+      <div class="card-top">
+        <div class="ex-number">02</div>
+        <div class="ex-main">
+          <div class="ex-name"><a href="https://www.youtube.com/results?search_query=Remada+Curvada+com+Barra+como+fazer" target="_blank" style="color:inherit;text-decoration:none;border-bottom:1px dashed var(--accent);">Remada Curvada com Barra</a></div>
+          <div class="ex-meta">
+            <span class="meta-pill"><span>4</span> séries</span>
+            <span class="meta-pill"><span>10</span> reps</span>
+            <span class="meta-pill">descanso <span>90s</span></span>
+          </div>
+        </div>
+        <div class="expand-icon">▾</div>
+      </div>
+      <div class="card-body">
+        <div class="section-label">Músculos Trabalhados</div>
+        <div class="muscles-grid">
+          <span class="muscle-tag">Latíssimo Dorsal</span>
+          <span class="muscle-tag">Romboides</span>
+          <span class="muscle-tag secondary">Trapézio Médio</span>
+          <span class="muscle-tag secondary">Bíceps</span>
+        </div>
+        <div class="section-label">Ganho Visual</div>
+        <div class="visual-gain">
+          <p>Constrói <strong>espessura nas costas</strong> — o que você vê de lado. Costas "grossas" dão uma presença física impressionante e fazem a parte superior parecer muito maior. Junto com a puxada, forma o combo para costas completas.</p>
+        </div>
+        <div class="section-label">Benefícios</div>
+        <ul class="benefits-list">
+          <li>Exercício composto pesado = maior estímulo de crescimento</li>
+          <li>Trabalha toda a cadeia posterior superior</li>
+          <li>Fortalece região lombar como estabilizador</li>
+          <li>Alta carga possível = mais ganho de força e massa</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="exercise-card" onclick="toggleCard(this)">
+      <div class="card-top">
+        <div class="ex-number">03</div>
+        <div class="ex-main">
+          <div class="ex-name"><a href="https://www.youtube.com/results?search_query=Remada+Unilateral+com+Halter+como+fazer" target="_blank" style="color:inherit;text-decoration:none;border-bottom:1px dashed var(--accent);">Remada Unilateral com Halter</a></div>
+          <div class="ex-meta">
+            <span class="meta-pill"><span>3</span> séries</span>
+            <span class="meta-pill"><span>12</span> reps</span>
+            <span class="meta-pill">descanso <span>60s</span></span>
+          </div>
+        </div>
+        <div class="expand-icon">▾</div>
+      </div>
+      <div class="card-body">
+        <div class="section-label">Músculos Trabalhados</div>
+        <div class="muscles-grid">
+          <span class="muscle-tag">Latíssimo Dorsal</span>
+          <span class="muscle-tag">Romboides</span>
+          <span class="muscle-tag secondary">Bíceps</span>
+        </div>
+        <div class="section-label">Ganho Visual</div>
+        <div class="visual-gain">
+          <p>Trabalho unilateral que <strong>corrige assimetrias</strong> e aprofunda o trabalho no lat. Permite usar mais amplitude e puxar com muito mais força por lado. O resultado é um lat mais "redondo" e completo visto de costas.</p>
+        </div>
+        <div class="section-label">Benefícios</div>
+        <ul class="benefits-list">
+          <li>Elimina desequilíbrios entre lado dominante e não-dominante</li>
+          <li>Maior arco de movimento que a remada bilateral</li>
+          <li>Ativa mais fibras por não ter limitação do lado mais fraco</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="exercise-card" onclick="toggleCard(this)">
+      <div class="card-top">
+        <div class="ex-number">04</div>
+        <div class="ex-main">
+          <div class="ex-name"><a href="https://www.youtube.com/results?search_query=Pullover+no+Cabo+como+fazer" target="_blank" style="color:inherit;text-decoration:none;border-bottom:1px dashed var(--accent);">Pullover no Cabo</a></div>
+          <div class="ex-meta">
+            <span class="meta-pill"><span>3</span> séries</span>
+            <span class="meta-pill"><span>15</span> reps</span>
+            <span class="meta-pill">descanso <span>45s</span></span>
+          </div>
+        </div>
+        <div class="expand-icon">▾</div>
+      </div>
+      <div class="card-body">
+        <div class="section-label">Músculos Trabalhados</div>
+        <div class="muscles-grid">
+          <span class="muscle-tag">Latíssimo Dorsal</span>
+          <span class="muscle-tag secondary">Serrátil Anterior</span>
+          <span class="muscle-tag secondary">Peitoral Inferior</span>
+        </div>
+        <div class="section-label">Ganho Visual</div>
+        <div class="visual-gain">
+          <p>Trabalha o <strong>serrátil anterior</strong> — aquele músculo dentado na lateral do tórax, entre peito e lat. Quando visível, dá aquele aspecto de "atleta" mesmo a distância. Também alonga e expande o lat na posição de maior tensão.</p>
+        </div>
+        <div class="section-label">Benefícios</div>
+        <ul class="benefits-list">
+          <li>Trabalha o serrátil — músculo raramente treinado diretamente</li>
+          <li>Expande a caixa torácica ao longo do tempo</li>
+          <li>Tensão máxima no ponto de alongamento do lat</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="exercise-card" onclick="toggleCard(this)">
+      <div class="card-top">
+        <div class="ex-number">05</div>
+        <div class="ex-main">
+          <div class="ex-name"><a href="https://www.youtube.com/results?search_query=Rosca+Direta+com+Barra+como+fazer" target="_blank" style="color:inherit;text-decoration:none;border-bottom:1px dashed var(--accent);">Rosca Direta com Barra</a></div>
+          <div class="ex-meta">
+            <span class="meta-pill"><span>3</span> séries</span>
+            <span class="meta-pill"><span>12</span> reps</span>
+            <span class="meta-pill">descanso <span>60s</span></span>
+          </div>
+        </div>
+        <div class="expand-icon">▾</div>
+      </div>
+      <div class="card-body">
+        <div class="section-label">Músculos Trabalhados</div>
+        <div class="muscles-grid">
+          <span class="muscle-tag">Bíceps Braquial</span>
+          <span class="muscle-tag secondary">Braquial</span>
+          <span class="muscle-tag secondary">Antebraço</span>
+        </div>
+        <div class="section-label">Ganho Visual</div>
+        <div class="visual-gain">
+          <p>O clássico para <strong>volume e pico do bíceps</strong>. A barra permite carga maior que os halteres, estimulando mais crescimento absoluto. O "pico" do bíceps — aquele mountain quando você dobra o braço — é diretamente treinado aqui.</p>
+        </div>
+        <div class="section-label">Benefícios</div>
+        <ul class="benefits-list">
+          <li>Maior carga possível para o bíceps = mais hipertrofia</li>
+          <li>Trabalha as duas cabeças simultaneamente</li>
+          <li>Base de qualquer treino de braço eficiente</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="exercise-card" onclick="toggleCard(this)">
+      <div class="card-top">
+        <div class="ex-number">06</div>
+        <div class="ex-main">
+          <div class="ex-name"><a href="https://www.youtube.com/results?search_query=Rosca+Martelo+como+fazer" target="_blank" style="color:inherit;text-decoration:none;border-bottom:1px dashed var(--accent);">Rosca Martelo</a></div>
+          <div class="ex-meta">
+            <span class="meta-pill"><span>3</span> séries</span>
+            <span class="meta-pill"><span>12</span> reps</span>
+            <span class="meta-pill">descanso <span>45s</span></span>
+          </div>
+        </div>
+        <div class="expand-icon">▾</div>
+      </div>
+      <div class="card-body">
+        <div class="section-label">Músculos Trabalhados</div>
+        <div class="muscles-grid">
+          <span class="muscle-tag">Braquial</span>
+          <span class="muscle-tag">Braquiorradial</span>
+          <span class="muscle-tag secondary">Bíceps Cabeça Longa</span>
+        </div>
+        <div class="section-label">Ganho Visual</div>
+        <div class="visual-gain">
+          <p>O braquial fica <strong>embaixo do bíceps</strong> — quando desenvolvido, "empurra" o bíceps pra cima, fazendo ele parecer maior e mais alto. É o segredo do braço que parece maior que realmente é. Também dá espessura ao antebraço.</p>
+        </div>
+        <div class="section-label">Benefícios</div>
+        <ul class="benefits-list">
+          <li>Único exercício que isola bem o músculo braquial</li>
+          <li>Desenvolve antebraço e melhora a aparência do braço inteiro</li>
+          <li>Complemento essencial para quem quer braços grandes de verdade</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="cardio-card">
+      <div class="cardio-icon">🚴</div>
+      <div class="cardio-info">
+        <h4>CARDIO FINAL — 20 MIN</h4>
+        <p><strong>Bike ergométrica</strong> · Resistência moderada · 65–70% FC máx · Ritmo constante e cadenciado · Preserva músculo enquanto queima gordura de forma eficiente.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- QUARTA - LEGS A -->
+  <div class="day-section" id="day-2">
+    <div class="day-header">
+      <div class="day-title">QUARTA</div>
+      <div class="day-focus">Legs A — Quadríceps · Glúteo · Panturrilha</div>
+    </div>
+
+    <div class="exercise-card" onclick="toggleCard(this)">
+      <div class="card-top">
+        <div class="ex-number">01</div>
+        <div class="ex-main">
+          <div class="ex-name"><a href="https://www.youtube.com/results?search_query=Agachamento+Livre+como+fazer" target="_blank" style="color:inherit;text-decoration:none;border-bottom:1px dashed var(--accent);">Agachamento Livre</a></div>
+          <div class="ex-meta">
+            <span class="meta-pill"><span>4</span> séries</span>
+            <span class="meta-pill"><span>10</span> reps</span>
+            <span class="meta-pill">descanso <span>90s</span></span>
+          </div>
+        </div>
+        <div class="expand-icon">▾</div>
+      </div>
+      <div class="card-body">
+        <div class="section-label">Músculos Trabalhados</div>
+        <div class="muscles-grid">
+          <span class="muscle-tag">Quadríceps</span>
+          <span class="muscle-tag">Glúteo Máximo</span>
+          <span class="muscle-tag secondary">Isquiotibiais</span>
+          <span class="muscle-tag secondary">Lombar</span>
+        </div>
+        <div class="section-label">Ganho Visual</div>
+        <div class="visual-gain">
+          <p>O rei dos exercícios. Desenvolve <strong>coxas cheias e glúteo redondo</strong> ao mesmo tempo. Pernas bem desenvolvidas mudam completamente a proporção do corpo — e ainda estimulam hormônios anabólicos que aceleram o crescimento de todo o resto.</p>
+        </div>
+        <div class="section-label">Benefícios</div>
+        <ul class="benefits-list">
+          <li>Maior liberação de testosterona e GH de qualquer exercício</li>
+          <li>Trabalha mais de 200 músculos simultaneamente</li>
+          <li>Queima mais calorias que qualquer outro movimento na academia</li>
+          <li>Melhora equilíbrio, postura e funcionalidade geral</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="exercise-card" onclick="toggleCard(this)">
+      <div class="card-top">
+        <div class="ex-number">02</div>
+        <div class="ex-main">
+          <div class="ex-name"><a href="https://www.youtube.com/results?search_query=Leg+Press+45°+como+fazer" target="_blank" style="color:inherit;text-decoration:none;border-bottom:1px dashed var(--accent);">Leg Press 45°</a></div>
+          <div class="ex-meta">
+            <span class="meta-pill"><span>4</span> séries</span>
+            <span class="meta-pill"><span>12–15</span> reps</span>
+            <span class="meta-pill">descanso <span>75s</span></span>
+          </div>
+        </div>
+        <div class="expand-icon">▾</div>
+      </div>
+      <div class="card-body">
+        <div class="section-label">Músculos Trabalhados</div>
+        <div class="muscles-grid">
+          <span class="muscle-tag">Quadríceps</span>
+          <span class="muscle-tag">Glúteo</span>
+          <span class="muscle-tag secondary">Isquiotibiais</span>
+        </div>
+        <div class="section-label">Ganho Visual</div>
+        <div class="visual-gain">
+          <p>Permite colocar <strong>carga muito superior ao agachamento</strong>, forçando o quadríceps a crescer. O resultado são coxas com vasto lateral bem marcado — aquela linha de músculo na parte externa da coxa que aparece quando você usa short.</p>
+        </div>
+        <div class="section-label">Benefícios</div>
+        <ul class="benefits-list">
+          <li>Carga muito superior ao agachamento = mais volume de trabalho</li>
+          <li>Sem demanda de equilíbrio = foco total no músculo</li>
+          <li>Posição dos pés muda o foco: alta = glúteo, baixa = quad</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="exercise-card" onclick="toggleCard(this)">
+      <div class="card-top">
+        <div class="ex-number">03</div>
+        <div class="ex-main">
+          <div class="ex-name"><a href="https://www.youtube.com/results?search_query=Cadeira+Extensora+como+fazer" target="_blank" style="color:inherit;text-decoration:none;border-bottom:1px dashed var(--accent);">Cadeira Extensora</a></div>
+          <div class="ex-meta">
+            <span class="meta-pill"><span>3</span> séries</span>
+            <span class="meta-pill"><span>15</span> reps</span>
+            <span class="meta-pill">descanso <span>45s</span></span>
+          </div>
+        </div>
+        <div class="expand-icon">▾</div>
+      </div>
+      <div class="card-body">
+        <div class="section-label">Músculos Trabalhados</div>
+        <div class="muscles-grid">
+          <span class="muscle-tag">Quadríceps (isolado)</span>
+        </div>
+        <div class="section-label">Ganho Visual</div>
+        <div class="visual-gain">
+          <p>Isolamento puro do quadríceps — especialmente o <strong>vasto medial</strong> (aquela "gota" de músculo acima do joelho). Quando desenvolvido, aparece como uma marca registrada de quem treina perna de verdade.</p>
+        </div>
+        <div class="section-label">Benefícios</div>
+        <ul class="benefits-list">
+          <li>Tensão máxima no ponto de contração do quadríceps</li>
+          <li>Trabalha o vasto medial que os compostos não alcançam bem</li>
+          <li>Ótimo finalizador para "queimar" o quad após os pesados</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="exercise-card" onclick="toggleCard(this)">
+      <div class="card-top">
+        <div class="ex-number">04</div>
+        <div class="ex-main">
+          <div class="ex-name"><a href="https://www.youtube.com/results?search_query=Afundo+com+Halteres+como+fazer" target="_blank" style="color:inherit;text-decoration:none;border-bottom:1px dashed var(--accent);">Afundo com Halteres</a></div>
+          <div class="ex-meta">
+            <span class="meta-pill"><span>3</span> séries</span>
+            <span class="meta-pill"><span>12</span> reps cada</span>
+            <span class="meta-pill">descanso <span>60s</span></span>
+          </div>
+        </div>
+        <div class="expand-icon">▾</div>
+      </div>
+      <div class="card-body">
+        <div class="section-label">Músculos Trabalhados</div>
+        <div class="muscles-grid">
+          <span class="muscle-tag">Glúteo</span>
+          <span class="muscle-tag">Quadríceps</span>
+          <span class="muscle-tag secondary">Isquiotibiais</span>
+          <span class="muscle-tag secondary">Core</span>
+        </div>
+        <div class="section-label">Ganho Visual</div>
+        <div class="visual-gain">
+          <p>Trabalho unilateral que foca no <strong>glúteo e na parte superior da coxa</strong>. O afundo é um dos melhores para dar forma e "levantar" o glúteo. Corrige assimetrias entre as pernas e cria proporção esteticamente mais harmônica.</p>
+        </div>
+        <div class="section-label">Benefícios</div>
+        <ul class="benefits-list">
+          <li>Maior ativação do glúteo que o leg press</li>
+          <li>Melhora equilíbrio e coordenação</li>
+          <li>Corrige desequilíbrios entre perna direita e esquerda</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="exercise-card" onclick="toggleCard(this)">
+      <div class="card-top">
+        <div class="ex-number">05</div>
+        <div class="ex-main">
+          <div class="ex-name"><a href="https://www.youtube.com/results?search_query=Panturrilha+em+Pé+como+fazer" target="_blank" style="color:inherit;text-decoration:none;border-bottom:1px dashed var(--accent);">Panturrilha em Pé</a></div>
+          <div class="ex-meta">
+            <span class="meta-pill"><span>4</span> séries</span>
+            <span class="meta-pill"><span>20</span> reps</span>
+            <span class="meta-pill">descanso <span>45s</span></span>
+          </div>
+        </div>
+        <div class="expand-icon">▾</div>
+      </div>
+      <div class="card-body">
+        <div class="section-label">Músculos Trabalhados</div>
+        <div class="muscles-grid">
+          <span class="muscle-tag">Gastrocnêmio</span>
+          <span class="muscle-tag secondary">Sóleo</span>
+        </div>
+        <div class="section-label">Ganho Visual</div>
+        <div class="visual-gain">
+          <p>A panturrilha em pé atinge o <strong>gastrocnêmio</strong> — a parte "redonda" e visível da panturrilha. Panturrilhas desenvolvidas equilibram o shape da perna e fazem a coxa parecer ainda maior em contraste. Visível com qualquer calçado.</p>
+        </div>
+        <div class="section-label">Benefícios</div>
+        <ul class="benefits-list">
+          <li>Gastrocnêmio só é ativado com joelho estendido (exercício em pé)</li>
+          <li>Alto volume (20 reps) é necessário — panturrilha é resistente</li>
+          <li>Melhora estabilidade do tornozelo e pisada</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="cardio-card">
+      <div class="cardio-icon">🪜</div>
+      <div class="cardio-info">
+        <h4>CARDIO FINAL — 15 MIN</h4>
+        <p><strong>Stairmaster / Escada</strong> · Nível moderado · Movimento natural que continua trabalhando glúteo e pernas enquanto queima gordura de forma eficiente. Máximo retorno no dia de pernas.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- QUINTA - PUSH B -->
+  <div class="day-section" id="day-3">
+    <div class="day-header">
+      <div class="day-title">QUINTA</div>
+      <div class="day-focus">Push B — Ombro · Peito · Tríceps</div>
+    </div>
+
+    <div class="exercise-card" onclick="toggleCard(this)">
+      <div class="card-top">
+        <div class="ex-number">01</div>
+        <div class="ex-main">
+          <div class="ex-name"><a href="https://www.youtube.com/results?search_query=Desenvolvimento+Arnold+como+fazer" target="_blank" style="color:inherit;text-decoration:none;border-bottom:1px dashed var(--accent);">Desenvolvimento Arnold</a></div>
+          <div class="ex-meta">
+            <span class="meta-pill"><span>4</span> séries</span>
+            <span class="meta-pill"><span>10–12</span> reps</span>
+            <span class="meta-pill">descanso <span>75s</span></span>
+          </div>
+        </div>
+        <div class="expand-icon">▾</div>
+      </div>
+      <div class="card-body">
+        <div class="section-label">Músculos Trabalhados</div>
+        <div class="muscles-grid">
+          <span class="muscle-tag">Deltoide Anterior</span>
+          <span class="muscle-tag">Deltoide Lateral</span>
+          <span class="muscle-tag secondary">Deltoide Posterior</span>
+          <span class="muscle-tag secondary">Tríceps</span>
+        </div>
+        <div class="section-label">Ganho Visual</div>
+        <div class="visual-gain">
+          <p>O único exercício que trabalha os <strong>três feixes do deltoide</strong> numa rotação só. Cria ombros redondos e volumosos em todos os ângulos. É a variação preferida de Arnold Schwarzenegger — não é coincidência.</p>
+        </div>
+        <div class="section-label">Benefícios</div>
+        <ul class="benefits-list">
+          <li>Ativa deltoide anterior, lateral e posterior no mesmo movimento</li>
+          <li>A rotação do punho aumenta o arco de movimento</li>
+          <li>Maior estímulo total para o ombro que o desenvolvimento convencional</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="exercise-card" onclick="toggleCard(this)">
+      <div class="card-top">
+        <div class="ex-number">02</div>
+        <div class="ex-main">
+          <div class="ex-name"><a href="https://www.youtube.com/results?search_query=Elevação+Frontal+no+Cabo+como+fazer" target="_blank" style="color:inherit;text-decoration:none;border-bottom:1px dashed var(--accent);">Elevação Frontal no Cabo</a></div>
+          <div class="ex-meta">
+            <span class="meta-pill"><span>3</span> séries</span>
+            <span class="meta-pill"><span>15</span> reps</span>
+            <span class="meta-pill">descanso <span>45s</span></span>
+          </div>
+        </div>
+        <div class="expand-icon">▾</div>
+      </div>
+      <div class="card-body">
+        <div class="section-label">Músculos Trabalhados</div>
+        <div class="muscles-grid">
+          <span class="muscle-tag">Deltoide Anterior</span>
+          <span class="muscle-tag secondary">Deltoide Lateral</span>
+        </div>
+        <div class="section-label">Ganho Visual</div>
+        <div class="visual-gain">
+          <p>Isola o <strong>deltoide anterior</strong> — a parte da frente do ombro. Quando desenvolvida, cria aquela marcação na junção do ombro com o peito, visível de frente. O cabo mantém tensão constante, superior ao halter.</p>
+        </div>
+        <div class="section-label">Benefícios</div>
+        <ul class="benefits-list">
+          <li>Tensão constante do cabo ativa mais fibras que o halter</li>
+          <li>Isola o deltoide anterior sem compensação</li>
+          <li>Complemento essencial para ombros 3D</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="exercise-card" onclick="toggleCard(this)">
+      <div class="card-top">
+        <div class="ex-number">03</div>
+        <div class="ex-main">
+          <div class="ex-name"><a href="https://www.youtube.com/results?search_query=Crucifixo+com+Halteres+como+fazer" target="_blank" style="color:inherit;text-decoration:none;border-bottom:1px dashed var(--accent);">Crucifixo com Halteres</a></div>
+          <div class="ex-meta">
+            <span class="meta-pill"><span>4</span> séries</span>
+            <span class="meta-pill"><span>12</span> reps</span>
+            <span class="meta-pill">descanso <span>60s</span></span>
+          </div>
+        </div>
+        <div class="expand-icon">▾</div>
+      </div>
+      <div class="card-body">
+        <div class="section-label">Músculos Trabalhados</div>
+        <div class="muscles-grid">
+          <span class="muscle-tag">Peitoral Médio</span>
+          <span class="muscle-tag secondary">Deltoide Anterior</span>
+        </div>
+        <div class="section-label">Ganho Visual</div>
+        <div class="visual-gain">
+          <p>O maior <strong>alongamento do peitoral</strong> possível — ativa as fibras externas que os supinos não alcançam. Cria aquela "linha" na borda do peitoral e aumenta a largura aparente do peito visto de frente.</p>
+        </div>
+        <div class="section-label">Benefícios</div>
+        <ul class="benefits-list">
+          <li>Máximo alongamento = ativa fibras que supinos não alcançam</li>
+          <li>Menor carga nas articulações que os compostos</li>
+          <li>Ótimo para "abrir" o peito visualmente</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="exercise-card" onclick="toggleCard(this)">
+      <div class="card-top">
+        <div class="ex-number">04</div>
+        <div class="ex-main">
+          <div class="ex-name"><a href="https://www.youtube.com/results?search_query=Supino+Declinado+como+fazer" target="_blank" style="color:inherit;text-decoration:none;border-bottom:1px dashed var(--accent);">Supino Declinado</a></div>
+          <div class="ex-meta">
+            <span class="meta-pill"><span>3</span> séries</span>
+            <span class="meta-pill"><span>12</span> reps</span>
+            <span class="meta-pill">descanso <span>75s</span></span>
+          </div>
+        </div>
+        <div class="expand-icon">▾</div>
+      </div>
+      <div class="card-body">
+        <div class="section-label">Músculos Trabalhados</div>
+        <div class="muscles-grid">
+          <span class="muscle-tag">Peitoral Inferior</span>
+          <span class="muscle-tag secondary">Tríceps</span>
+          <span class="muscle-tag secondary">Deltoide</span>
+        </div>
+        <div class="section-label">Ganho Visual</div>
+        <div class="visual-gain">
+          <p>Trabalha o <strong>peitoral inferior</strong> — a parte baixa do peito que cria aquela linha de definição embaixo do peitoral. Com gordura corporal reduzindo, essa linha vai aparecer e dar aquele aspecto de peito "esculpido".</p>
+        </div>
+        <div class="section-label">Benefícios</div>
+        <ul class="benefits-list">
+          <li>Permite carga maior que o supino reto na maioria das pessoas</li>
+          <li>Ativa peitoral inferior de forma única</li>
+          <li>Menos sobrecarga nos ombros pela posição</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="exercise-card" onclick="toggleCard(this)">
+      <div class="card-top">
+        <div class="ex-number">05</div>
+        <div class="ex-main">
+          <div class="ex-name"><a href="https://www.youtube.com/results?search_query=Mergulho+entre+Bancos+como+fazer" target="_blank" style="color:inherit;text-decoration:none;border-bottom:1px dashed var(--accent);">Mergulho entre Bancos</a></div>
+          <div class="ex-meta">
+            <span class="meta-pill"><span>3</span> séries</span>
+            <span class="meta-pill">até a falha</span>
+            <span class="meta-pill">descanso <span>60s</span></span>
+          </div>
+        </div>
+        <div class="expand-icon">▾</div>
+      </div>
+      <div class="card-body">
+        <div class="section-label">Músculos Trabalhados</div>
+        <div class="muscles-grid">
+          <span class="muscle-tag">Tríceps</span>
+          <span class="muscle-tag">Peitoral Inferior</span>
+          <span class="muscle-tag secondary">Deltoide</span>
+        </div>
+        <div class="section-label">Ganho Visual</div>
+        <div class="visual-gain">
+          <p>Trabalho com peso corporal que força o <strong>tríceps à falha total</strong>. A combinação de tríceps + peitoral inferior nesse ângulo fecha o treino de push com uma "queimação" completa — garante que nenhuma fibra ficou de fora.</p>
+        </div>
+        <div class="section-label">Benefícios</div>
+        <ul class="benefits-list">
+          <li>Exercício funcional com peso corporal = alta ativação neural</li>
+          <li>Ir à falha garante recrutamento máximo de fibras</li>
+          <li>Finalizador perfeito que "sela" o treino de peito e tríceps</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="exercise-card" onclick="toggleCard(this)">
+      <div class="card-top">
+        <div class="ex-number">06</div>
+        <div class="ex-main">
+          <div class="ex-name"><a href="https://www.youtube.com/results?search_query=Tríceps+Francês+no+Cabo+como+fazer" target="_blank" style="color:inherit;text-decoration:none;border-bottom:1px dashed var(--accent);">Tríceps Francês no Cabo</a></div>
+          <div class="ex-meta">
+            <span class="meta-pill"><span>3</span> séries</span>
+            <span class="meta-pill"><span>15</span> reps</span>
+            <span class="meta-pill">descanso <span>45s</span></span>
+          </div>
+        </div>
+        <div class="expand-icon">▾</div>
+      </div>
+      <div class="card-body">
+        <div class="section-label">Músculos Trabalhados</div>
+        <div class="muscles-grid">
+          <span class="muscle-tag">Tríceps Longo</span>
+          <span class="muscle-tag secondary">Tríceps Medial</span>
+        </div>
+        <div class="section-label">Ganho Visual</div>
+        <div class="visual-gain">
+          <p>Atacar a <strong>cabeça longa do tríceps</strong> com tensão constante do cabo — diferente do tríceps testa com barra. O cabo mantém tensão no ponto de maior alongamento, onde há mais potencial de crescimento. Finalizador intenso.</p>
+        </div>
+        <div class="section-label">Benefícios</div>
+        <ul class="benefits-list">
+          <li>Tensão constante do cabo = maior tempo sob tensão</li>
+          <li>Trabalha a cabeça longa em máximo alongamento</li>
+          <li>Complementa o mergulho e fecha o tríceps por completo</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="cardio-card">
+      <div class="cardio-icon">🏃</div>
+      <div class="cardio-info">
+        <h4>CARDIO FINAL — 20 MIN</h4>
+        <p><strong>Esteira com inclinação</strong> · 10–12% de inclinação · Caminhada em ritmo constante · Zona de gordura · Ideal para queima sem comprometer recuperação muscular do dia anterior de perna.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- SEXTA - PULL B -->
+  <div class="day-section" id="day-4">
+    <div class="day-header">
+      <div class="day-title">SEXTA</div>
+      <div class="day-focus">Pull B — Costas · Bíceps</div>
+    </div>
+
+    <div class="exercise-card" onclick="toggleCard(this)">
+      <div class="card-top">
+        <div class="ex-number">01</div>
+        <div class="ex-main">
+          <div class="ex-name"><a href="https://www.youtube.com/results?search_query=Remada+Cavalinho+como+fazer" target="_blank" style="color:inherit;text-decoration:none;border-bottom:1px dashed var(--accent);">Remada Cavalinho</a></div>
+          <div class="ex-meta">
+            <span class="meta-pill"><span>4</span> séries</span>
+            <span class="meta-pill"><span>10</span> reps</span>
+            <span class="meta-pill">descanso <span>90s</span></span>
+          </div>
+        </div>
+        <div class="expand-icon">▾</div>
+      </div>
+      <div class="card-body">
+        <div class="section-label">Músculos Trabalhados</div>
+        <div class="muscles-grid">
+          <span class="muscle-tag">Trapézio Médio</span>
+          <span class="muscle-tag">Romboides</span>
+          <span class="muscle-tag secondary">Deltoide Posterior</span>
+          <span class="muscle-tag secondary">Bíceps</span>
+        </div>
+        <div class="section-label">Ganho Visual</div>
+        <div class="visual-gain">
+          <p>Constrói a <strong>espessura do centro das costas</strong> — o trapézio médio e os romboides. Costas com boa espessura dão aquela aparência de "muro" de músculo visto de costas. Ângulo diferente da remada curvada para atingir o centro.</p>
+        </div>
+        <div class="section-label">Benefícios</div>
+        <ul class="benefits-list">
+          <li>Posição apoiada elimina compensação lombar</li>
+          <li>Foco total no meio das costas sem fadiga de estabilização</li>
+          <li>Permite carga progressiva segura e consistente</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="exercise-card" onclick="toggleCard(this)">
+      <div class="card-top">
+        <div class="ex-number">02</div>
+        <div class="ex-main">
+          <div class="ex-name"><a href="https://www.youtube.com/results?search_query=Puxada+Triângulo+como+fazer" target="_blank" style="color:inherit;text-decoration:none;border-bottom:1px dashed var(--accent);">Puxada Triângulo</a></div>
+          <div class="ex-meta">
+            <span class="meta-pill"><span>4</span> séries</span>
+            <span class="meta-pill"><span>12</span> reps</span>
+            <span class="meta-pill">descanso <span>60s</span></span>
+          </div>
+        </div>
+        <div class="expand-icon">▾</div>
+      </div>
+      <div class="card-body">
+        <div class="section-label">Músculos Trabalhados</div>
+        <div class="muscles-grid">
+          <span class="muscle-tag">Latíssimo Dorsal (inferior)</span>
+          <span class="muscle-tag secondary">Bíceps</span>
+          <span class="muscle-tag secondary">Romboides</span>
+        </div>
+        <div class="section-label">Ganho Visual</div>
+        <div class="visual-gain">
+          <p>A pegada neutra com triângulo atinge a <strong>porção inferior do latíssimo</strong>, criando aquele "V" baixo nas costas que aparece até quando você usa uma camiseta justa. Ângulo diferente da puxada aberta para costas completas.</p>
+        </div>
+        <div class="section-label">Benefícios</div>
+        <ul class="benefits-list">
+          <li>Pegada neutra permite mais carga e menos pressão nos pulsos</li>
+          <li>Atinge porção inferior do lat — complementa a puxada aberta</li>
+          <li>Ótima para construir o shape em V completo nas costas</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="exercise-card" onclick="toggleCard(this)">
+      <div class="card-top">
+        <div class="ex-number">03</div>
+        <div class="ex-main">
+          <div class="ex-name"><a href="https://www.youtube.com/results?search_query=Remada+Sentado+no+Cabo+como+fazer" target="_blank" style="color:inherit;text-decoration:none;border-bottom:1px dashed var(--accent);">Remada Sentado no Cabo</a></div>
+          <div class="ex-meta">
+            <span class="meta-pill"><span>3</span> séries</span>
+            <span class="meta-pill"><span>15</span> reps</span>
+            <span class="meta-pill">descanso <span>60s</span></span>
+          </div>
+        </div>
+        <div class="expand-icon">▾</div>
+      </div>
+      <div class="card-body">
+        <div class="section-label">Músculos Trabalhados</div>
+        <div class="muscles-grid">
+          <span class="muscle-tag">Latíssimo Dorsal</span>
+          <span class="muscle-tag">Romboides</span>
+          <span class="muscle-tag secondary">Bíceps</span>
+          <span class="muscle-tag secondary">Trapézio</span>
+        </div>
+        <div class="section-label">Ganho Visual</div>
+        <div class="visual-gain">
+          <p>Tensão constante do cabo que <strong>trabalha costas em todos os ângulos</strong> do movimento — do alongamento máximo à contração máxima. Garante volume de trabalho alto para costas sem esgotamento do sistema nervoso.</p>
+        </div>
+        <div class="section-label">Benefícios</div>
+        <ul class="benefits-list">
+          <li>Tensão constante = maior bomba muscular e ativação</li>
+          <li>Posição sentada elimina compensação lombar</li>
+          <li>Volume alto sem risco de lesão — ideal no final do treino</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="exercise-card" onclick="toggleCard(this)">
+      <div class="card-top">
+        <div class="ex-number">04</div>
+        <div class="ex-main">
+          <div class="ex-name"><a href="https://www.youtube.com/results?search_query=Encolhimento+com+Halteres+como+fazer" target="_blank" style="color:inherit;text-decoration:none;border-bottom:1px dashed var(--accent);">Encolhimento com Halteres</a></div>
+          <div class="ex-meta">
+            <span class="meta-pill"><span>3</span> séries</span>
+            <span class="meta-pill"><span>15</span> reps</span>
+            <span class="meta-pill">descanso <span>45s</span></span>
+          </div>
+        </div>
+        <div class="expand-icon">▾</div>
+      </div>
+      <div class="card-body">
+        <div class="section-label">Músculos Trabalhados</div>
+        <div class="muscles-grid">
+          <span class="muscle-tag">Trapézio Superior</span>
+          <span class="muscle-tag secondary">Levantador da Escápula</span>
+        </div>
+        <div class="section-label">Ganho Visual</div>
+        <div class="visual-gain">
+          <p>Desenvolve o <strong>trapézio superior</strong> — a "montanha" entre pescoço e ombros. Quando volumoso, dá aquela aparência de "touro" e potência que muda o visual do pescoço, ombro e costas superiores completamente.</p>
+        </div>
+        <div class="section-label">Benefícios</div>
+        <ul class="benefits-list">
+          <li>Único exercício que isola o trapézio superior diretamente</li>
+          <li>Halteres permitem maior arco que a barra</li>
+          <li>Reduz tensão cervical acumulada no dia a dia</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="exercise-card" onclick="toggleCard(this)">
+      <div class="card-top">
+        <div class="ex-number">05</div>
+        <div class="ex-main">
+          <div class="ex-name"><a href="https://www.youtube.com/results?search_query=Rosca+Scott+como+fazer" target="_blank" style="color:inherit;text-decoration:none;border-bottom:1px dashed var(--accent);">Rosca Scott</a></div>
+          <div class="ex-meta">
+            <span class="meta-pill"><span>3</span> séries</span>
+            <span class="meta-pill"><span>12</span> reps</span>
+            <span class="meta-pill">descanso <span>60s</span></span>
+          </div>
+        </div>
+        <div class="expand-icon">▾</div>
+      </div>
+      <div class="card-body">
+        <div class="section-label">Músculos Trabalhados</div>
+        <div class="muscles-grid">
+          <span class="muscle-tag">Bíceps Cabeça Curta</span>
+          <span class="muscle-tag secondary">Braquial</span>
+        </div>
+        <div class="section-label">Ganho Visual</div>
+        <div class="visual-gain">
+          <p>Foca na <strong>cabeça curta do bíceps</strong> — responsável pela "largura" e "fullness" do bíceps visto de frente. Sem possibilidade de balançar o tronco, o músculo trabalha isolado e com máxima tensão na posição de alongamento.</p>
+        </div>
+        <div class="section-label">Benefícios</div>
+        <ul class="benefits-list">
+          <li>Elimina qualquer possibilidade de trapaça no movimento</li>
+          <li>Máximo isolamento do bíceps</li>
+          <li>Tensão alta no alongamento = maior potencial de crescimento</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="exercise-card" onclick="toggleCard(this)">
+      <div class="card-top">
+        <div class="ex-number">06</div>
+        <div class="ex-main">
+          <div class="ex-name"><a href="https://www.youtube.com/results?search_query=Rosca+Concentrada+como+fazer" target="_blank" style="color:inherit;text-decoration:none;border-bottom:1px dashed var(--accent);">Rosca Concentrada</a></div>
+          <div class="ex-meta">
+            <span class="meta-pill"><span>3</span> séries</span>
+            <span class="meta-pill"><span>12</span> reps</span>
+            <span class="meta-pill">descanso <span>45s</span></span>
+          </div>
+        </div>
+        <div class="expand-icon">▾</div>
+      </div>
+      <div class="card-body">
+        <div class="section-label">Músculos Trabalhados</div>
+        <div class="muscles-grid">
+          <span class="muscle-tag">Bíceps (pico)</span>
+          <span class="muscle-tag secondary">Braquial</span>
+        </div>
+        <div class="section-label">Ganho Visual</div>
+        <div class="visual-gain">
+          <p>O melhor exercício para desenvolver o <strong>"pico" do bíceps</strong> — a altura máxima ao flexionar o braço. Estudos mostram que a rosca concentrada tem a maior ativação do bíceps de todos os exercícios. Finalizador perfeito.</p>
+        </div>
+        <div class="section-label">Benefícios</div>
+        <ul class="benefits-list">
+          <li>Maior ativação eletromiográfica do bíceps de qualquer exercício</li>
+          <li>Supinação do punho na contração maximiza o pico</li>
+          <li>Trabalho unilateral = correção de assimetrias de braço</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="cardio-card">
+      <div class="cardio-icon">🚴</div>
+      <div class="cardio-info">
+        <h4>CARDIO FINAL — 20 MIN</h4>
+        <p><strong>Bike ergométrica</strong> · Ritmo constante · 65–70% FC máx · Finalizar a semana de treino com cardio leve que queima gordura sem impacto nas articulações — perfeito após 5 dias intensos.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- SÁBADO - LEGS B -->
+  <div class="day-section" id="day-5">
+    <div class="day-header">
+      <div class="day-title">SÁBADO</div>
+      <div class="day-focus">Legs B — Posterior · Glúteo · Core</div>
+    </div>
+
+    <div class="exercise-card" onclick="toggleCard(this)">
+      <div class="card-top">
+        <div class="ex-number">01</div>
+        <div class="ex-main">
+          <div class="ex-name"><a href="https://www.youtube.com/results?search_query=Stiff+com+Barra+como+fazer" target="_blank" style="color:inherit;text-decoration:none;border-bottom:1px dashed var(--accent);">Stiff com Barra</a></div>
+          <div class="ex-meta">
+            <span class="meta-pill"><span>4</span> séries</span>
+            <span class="meta-pill"><span>10</span> reps</span>
+            <span class="meta-pill">descanso <span>90s</span></span>
+          </div>
+        </div>
+        <div class="expand-icon">▾</div>
+      </div>
+      <div class="card-body">
+        <div class="section-label">Músculos Trabalhados</div>
+        <div class="muscles-grid">
+          <span class="muscle-tag">Isquiotibiais</span>
+          <span class="muscle-tag">Glúteo</span>
+          <span class="muscle-tag secondary">Lombar</span>
+          <span class="muscle-tag secondary">Panturrilha</span>
+        </div>
+        <div class="section-label">Ganho Visual</div>
+        <div class="visual-gain">
+          <p>O melhor exercício para os <strong>isquiotibiais e a parte baixa do glúteo</strong>. Cria aquela linha de separação visível entre a parte traseira da coxa e o glúteo — o que dá o aspecto de perna "esculpida" vista de costas e de lado.</p>
+        </div>
+        <div class="section-label">Benefícios</div>
+        <ul class="benefits-list">
+          <li>Máximo alongamento dos isquiotibiais = alto potencial de hipertrofia</li>
+          <li>Ativa toda a cadeia posterior em um movimento</li>
+          <li>Melhora flexibilidade e postura simultaneamente</li>
+          <li>Ativa glúteo inferior que agachamento não atinge bem</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="exercise-card" onclick="toggleCard(this)">
+      <div class="card-top">
+        <div class="ex-number">02</div>
+        <div class="ex-main">
+          <div class="ex-name"><a href="https://www.youtube.com/results?search_query=Cadeira+Flexora+como+fazer" target="_blank" style="color:inherit;text-decoration:none;border-bottom:1px dashed var(--accent);">Cadeira Flexora</a></div>
+          <div class="ex-meta">
+            <span class="meta-pill"><span>4</span> séries</span>
+            <span class="meta-pill"><span>12–15</span> reps</span>
+            <span class="meta-pill">descanso <span>60s</span></span>
+          </div>
+        </div>
+        <div class="expand-icon">▾</div>
+      </div>
+      <div class="card-body">
+        <div class="section-label">Músculos Trabalhados</div>
+        <div class="muscles-grid">
+          <span class="muscle-tag">Isquiotibiais (isolado)</span>
+          <span class="muscle-tag secondary">Gastrocnêmio</span>
+        </div>
+        <div class="section-label">Ganho Visual</div>
+        <div class="visual-gain">
+          <p>Isolamento puro dos isquiotibiais. Cria <strong>volume e definição na parte traseira da coxa</strong> — a parte que aparece quando você usa bermuda e anda de costas. Perna que tem posterior desenvolvido tem um shape muito mais completo.</p>
+        </div>
+        <div class="section-label">Benefícios</div>
+        <ul class="benefits-list">
+          <li>Único exercício que isola completamente os isquiotibiais</li>
+          <li>Contração máxima no ponto de maior tensão</li>
+          <li>Previne desequilíbrio quad/isquio que causa lesões</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="exercise-card" onclick="toggleCard(this)">
+      <div class="card-top">
+        <div class="ex-number">03</div>
+        <div class="ex-main">
+          <div class="ex-name"><a href="https://www.youtube.com/results?search_query=Mesa+Flexora+como+fazer" target="_blank" style="color:inherit;text-decoration:none;border-bottom:1px dashed var(--accent);">Mesa Flexora</a></div>
+          <div class="ex-meta">
+            <span class="meta-pill"><span>3</span> séries</span>
+            <span class="meta-pill"><span>12</span> reps</span>
+            <span class="meta-pill">descanso <span>60s</span></span>
+          </div>
+        </div>
+        <div class="expand-icon">▾</div>
+      </div>
+      <div class="card-body">
+        <div class="section-label">Músculos Trabalhados</div>
+        <div class="muscles-grid">
+          <span class="muscle-tag">Isquiotibiais (bíceps femoral)</span>
+          <span class="muscle-tag secondary">Glúteo</span>
+        </div>
+        <div class="section-label">Ganho Visual</div>
+        <div class="visual-gain">
+          <p>Na posição deitada, o isquiotibial é trabalhado <strong>em seu maior alongamento</strong>. Atinge o bíceps femoral (cabeça longa) que a cadeira flexora não alcança tão bem. Garante isquiotibiais completos e simétricos.</p>
+        </div>
+        <div class="section-label">Benefícios</div>
+        <ul class="benefits-list">
+          <li>Maior ativação do bíceps femoral cabeça longa</li>
+          <li>Ângulo diferente da cadeira flexora = complemento perfeito</li>
+          <li>Reduz risco de ruptura de isquiotibial em longo prazo</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="exercise-card" onclick="toggleCard(this)">
+      <div class="card-top">
+        <div class="ex-number">04</div>
+        <div class="ex-main">
+          <div class="ex-name"><a href="https://www.youtube.com/results?search_query=Abdução+no+Cabo+como+fazer" target="_blank" style="color:inherit;text-decoration:none;border-bottom:1px dashed var(--accent);">Abdução no Cabo</a></div>
+          <div class="ex-meta">
+            <span class="meta-pill"><span>3</span> séries</span>
+            <span class="meta-pill"><span>15</span> reps</span>
+            <span class="meta-pill">descanso <span>45s</span></span>
+          </div>
+        </div>
+        <div class="expand-icon">▾</div>
+      </div>
+      <div class="card-body">
+        <div class="section-label">Músculos Trabalhados</div>
+        <div class="muscles-grid">
+          <span class="muscle-tag">Glúteo Médio</span>
+          <span class="muscle-tag secondary">Glúteo Mínimo</span>
+          <span class="muscle-tag secondary">TFL</span>
+        </div>
+        <div class="section-label">Ganho Visual</div>
+        <div class="visual-gain">
+          <p>O glúteo médio é o que dá a <strong>"curva" lateral do quadril</strong>. Quando desenvolvido, cria aquela curvatura arredondada que aparece dos lados — dá a silhueta em "ampulheta" e faz a cintura parecer mais estreita em contraste.</p>
+        </div>
+        <div class="section-label">Benefícios</div>
+        <ul class="benefits-list">
+          <li>Único músculo responsável pela largura lateral do quadril</li>
+          <li>Melhora estabilidade do joelho e previne dores</li>
+          <li>Complemento essencial para glúteos completos em todos os ângulos</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="exercise-card" onclick="toggleCard(this)">
+      <div class="card-top">
+        <div class="ex-number">05</div>
+        <div class="ex-main">
+          <div class="ex-name"><a href="https://www.youtube.com/results?search_query=Prancha+como+fazer" target="_blank" style="color:inherit;text-decoration:none;border-bottom:1px dashed var(--accent);">Prancha</a></div>
+          <div class="ex-meta">
+            <span class="meta-pill"><span>3</span> séries</span>
+            <span class="meta-pill"><span>45–60s</span></span>
+            <span class="meta-pill">descanso <span>45s</span></span>
+          </div>
+        </div>
+        <div class="expand-icon">▾</div>
+      </div>
+      <div class="card-body">
+        <div class="section-label">Músculos Trabalhados</div>
+        <div class="muscles-grid">
+          <span class="muscle-tag">Core (todo)</span>
+          <span class="muscle-tag">Transverso Abdominal</span>
+          <span class="muscle-tag secondary">Lombar</span>
+          <span class="muscle-tag secondary">Glúteo</span>
+        </div>
+        <div class="section-label">Ganho Visual</div>
+        <div class="visual-gain">
+          <p>Ativa o <strong>transverso abdominal</strong> — o músculo mais profundo do core, responsável por "segurar" a barriga. Ao longo do tempo, cria o efeito de barriga mais firme e contida mesmo antes da gordura sumir completamente.</p>
+        </div>
+        <div class="section-label">Benefícios</div>
+        <ul class="benefits-list">
+          <li>Estabiliza a coluna e reduz dores lombares</li>
+          <li>Ativa core profundo que outros exercícios não alcançam</li>
+          <li>Melhora performance em todos os outros exercícios</li>
+          <li>Sem impacto nas articulações — seguro e eficiente</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="exercise-card" onclick="toggleCard(this)">
+      <div class="card-top">
+        <div class="ex-number">06</div>
+        <div class="ex-main">
+          <div class="ex-name"><a href="https://www.youtube.com/results?search_query=Abdominal+Crunch+no+Cabo+como+fazer" target="_blank" style="color:inherit;text-decoration:none;border-bottom:1px dashed var(--accent);">Abdominal Crunch no Cabo</a></div>
+          <div class="ex-meta">
+            <span class="meta-pill"><span>3</span> séries</span>
+            <span class="meta-pill"><span>15</span> reps</span>
+            <span class="meta-pill">descanso <span>45s</span></span>
+          </div>
+        </div>
+        <div class="expand-icon">▾</div>
+      </div>
+      <div class="card-body">
+        <div class="section-label">Músculos Trabalhados</div>
+        <div class="muscles-grid">
+          <span class="muscle-tag">Reto Abdominal</span>
+          <span class="muscle-tag secondary">Oblíquos</span>
+        </div>
+        <div class="section-label">Ganho Visual</div>
+        <div class="visual-gain">
+          <p>O crunch no cabo com <strong>resistência progressiva</strong> constrói o reto abdominal como qualquer outro músculo. Com a gordura reduzindo, o abdominal vai aparecer — e ter músculo construído embaixo faz toda a diferença na definição final.</p>
+        </div>
+        <div class="section-label">Benefícios</div>
+        <ul class="benefits-list">
+          <li>Carga progressiva no abdominal = crescimento real do músculo</li>
+          <li>Superior ao crunch no chão pela tensão constante do cabo</li>
+          <li>Constrói o "six pack" que vai aparecer conforme a gordura baixa</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="cardio-card">
+      <div class="cardio-icon">🚶</div>
+      <div class="cardio-info">
+        <h4>CARDIO FINAL — 25 MIN</h4>
+        <p><strong>Esteira leve</strong> · Inclinação 6–8% · Ritmo tranquilo · Sessão mais longa por ser o último treino da semana · Foco em queima de gordura e descompressão antes do domingo de descanso total.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- DOMINGO - DESCANSO -->
+  <div class="day-section" id="day-6">
+    <div class="day-header">
+      <div class="day-title">DOMINGO</div>
+      <div class="day-focus">Recuperação Total</div>
+    </div>
+    <div class="rest-card">
+      <h2>DESCANSO</h2>
+      <p>O músculo cresce no descanso, não no treino.<br>Hoje é dia de dormir bem, comer bem e deixar o corpo recuperar.<br><br>Pode caminhar, alongar, ou simplesmente descansar.<br>Amanhã você volta mais forte.</p>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  function showDay(index) {
+    document.querySelectorAll('.day-section').forEach((s, i) => {
+      s.classList.toggle('active', i === index);
+    });
+    document.querySelectorAll('.day-btn').forEach((b, i) => {
+      b.classList.toggle('active', i === index);
+    });
+  }
+
+  function toggleCard(card) {
+    card.classList.toggle('open');
+  }
+</script>
+</body>
+</html>
